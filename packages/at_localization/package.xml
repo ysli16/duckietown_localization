@@ -1,0 +1,11 @@
+<package>
+  <name>at_localization</name>
+  <version>0.1.0</version>
+  <description>
+  ROS packages for duckiebot localization using encoder, Apriltag and fused data. 
+  </description>
+  <maintainer email="yuesli@student.ethz.ch">Yueshan Li</maintainer>
+  <license>None</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

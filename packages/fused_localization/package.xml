@@ -1,11 +1,13 @@
 <package>
-  <name>my_package</name>
+  <name>fused_localization</name>
   <version>0.1.0</version>
   <description>
-  This package is a test for RH3.
+  ROS packages for duckiebot localization using encoder, Apriltag and fused data. 
   </description>
   <maintainer email="yuesli@student.ethz.ch">Yueshan Li</maintainer>
   <license>None</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>encoder_localization</run_depend>
+  <build_depend>encoder_localization</build_depend>
 </package>

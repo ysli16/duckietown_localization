@@ -1,1 +1,3 @@
 # LIST YOUR PYTHON3 PACKAGES HERE
+dt-apriltags
+#numba

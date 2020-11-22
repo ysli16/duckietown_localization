@@ -1,0 +1,11 @@
+<launch>
+  <arg name="veh"/>
+  <arg name="node_name" value="fused_localization_node" />
+
+  <group ns="$(arg veh)">
+    <node name="at_localization" pkg="at_localization" type="at_localization_node.py" output="screen"/>
+    <node name="encoder_localization" pkg="encoder_localization" type="encoder_localization_node.py" output="screen"/>
+    <node name="$(arg node_name)" pkg="fused_localization" type="fused_localization_node.py" output="screen">
+    </node>
+  </group>
+</launch>

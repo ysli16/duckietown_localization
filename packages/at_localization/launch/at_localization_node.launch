@@ -1,0 +1,9 @@
+<launch>
+  <arg name="veh"/>
+  <arg name="node_name" value="at_localization_node" />
+
+  <group ns="$(arg veh)">
+    <node name="$(arg node_name)" pkg="at_localization" type="at_localization_node.py" output="screen">
+    </node>
+  </group>
+</launch>
