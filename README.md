@@ -1,47 +1,79 @@
-# Template: template-ros
+## Overview
+This repo contains 3 packages for duckiebot localization.
 
-This template provides a boilerplate repository
-for developing ROS-based software in Duckietown.
+`encoder_localization` package utilizes wheel encoders to estimate current pose of the duckiebot. The initial pose is assumed to be (0.15,0) with rotation angle pi in the map frame. It subscribes to both wheel encoders' tick and publish the estimated transformation between baselink frame and map frame to topic `encoder_localization_node/transform`. A service called `encoder_localization_node/frame_calibration` is provided that uses the given transform to calibrate the estimated encoder frame transform. This service is called by the `fused_localization_node`.
 
-**NOTE:** If you want to develop software that does not use
-ROS, check out [this template](https://github.com/duckietown/template-basic).
+`at_localization` package utilizes Apriltag to estimate current pose of the duckiebot. The position of the Apriltag is assumed to be at the origin of map frame. It subscribes to camera images and publish the estimated transformation between baselink frame and map frame to topic `at_localization_node/transform`.
 
+`fused_localization` package provides a fused estimation of duckiebot pose. It subscribes to both encoder_localization and at_localization transformations mentioned above and publish the estimated transformation between baselink frame and map frame to topic `fused_localization_node/transform`. The first time the Apriltag becomes visible, it calls service `encoder_localization_node/frame_calibration` to calledcalibrate the encoder_baselink frame to match exactly the at_localization transformation. When Apriltag estimation is available, fused_localization completely relays on at_localization and projects at_localization results on the ground plane. When Apriltag is not visible, encoder estimation is used, starting from the last Apriltag pose received.
 
-## How to use it
+## Usage
 
-### 1. Fork this repository
+### encoder_localization package
+Edit `default.sh` inside `launchers` folder. Commented every lines start with `dt-exec` except
 
-Use the fork button in the top-right corner of the github page to fork this template repository.
+`dt-exec roslaunch encoder_localization encoder_localization_node.launch veh:="$VEHICLE_NAME"`
 
+Then run command
 
-### 2. Create a new repository
+`dts devel build -H <duckiebot_name>.local -f`
 
-Create a new repository on github.com while
-specifying the newly forked template repository as
-a template for your new repository.
+Replace `<duckiebot_name>` with your duckiebot name.
 
+To run the image, use command
 
-### 3. Define dependencies
+`dts devel run -H <duckiebot_name>.local`
 
-List the dependencies in the files `dependencies-apt.txt` and
-`dependencies-py3.txt` (apt packages and pip packages respectively).
+To visualize frame transformations, run command in a new terminal
 
+`dts start_gui_tools <duckiebot_name>`
 
-### 4. Place your code
+Replace `<duckiebot_name>` with your duckiebot name.
 
-Place your code in the directory `/packages/` of
-your new repository.
+Then run command `rviz` and select `TF` and `image` in the opening window.
 
+### at_localization package
+Edit `default.sh` inside `launchers` folder. Commented every lines start with `dt-exec` except
 
-### 5. Setup launchers
+`dt-exec roslaunch at_localization at_localization_node.launch veh:="$VEHICLE_NAME"`
 
-The directory `/launchers` can contain as many launchers (launching scripts)
-as you want. A default launcher called `default.sh` must always be present.
+Then run command
 
-If you create an executable script (i.e., a file with a valid shebang statement)
-a launcher will be created for it. For example, the script file 
-`/launchers/my-launcher.sh` will be available inside the Docker image as the binary
-`dt-launcher-my-launcher`.
+`dts devel build -H <duckiebot_name>.local -f`
 
-When launching a new container, you can simply provide `dt-launcher-my-launcher` as
-command.
+Replace `<duckiebot_name>` with your duckiebot name.
+
+To run the image, use command
+
+`dts devel run -H <duckiebot_name>.local`
+
+To visualize frame transformations, run command in a new terminal
+
+`dts start_gui_tools <duckiebot_name>`
+
+Replace `<duckiebot_name>` with your duckiebot name.
+
+Then run command `rviz` and select `TF` and `image` in the opening window.
+
+### fused_localization package
+Edit `default.sh` inside `launchers` folder. Commented every lines start with `dt-exec` except
+
+`dt-exec roslaunch fused_localization fused_localization_node.launch veh:="$VEHICLE_NAME"`
+
+Then run command
+
+`dts devel build -H <duckiebot_name>.local -f`
+
+Replace `<duckiebot_name>` with your duckiebot name.
+
+To run the image, use command
+
+`dts devel run -H <duckiebot_name>.local`
+
+To visualize frame transformations, run command in a new terminal
+
+`dts start_gui_tools <duckiebot_name>`
+
+Replace `<duckiebot_name>` with your duckiebot name.
+
+Then run command `rviz` and select `TF` and `image` in the opening window.
