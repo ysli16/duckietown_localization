@@ -1,7 +1,7 @@
 # parameters
-ARG REPO_NAME="<duckietown_localization>"
-ARG DESCRIPTION="<ROS packages for duckiebot localization using encoder, Apriltag and fused data. >"
-ARG MAINTAINER="<Yueshan Li> (<yuesli@student.ethz.ch>)"
+ARG REPO_NAME="duckietown_localization"
+ARG DESCRIPTION="ROS packages for duckiebot localization using encoder, Apriltag and fused data."
+ARG MAINTAINER="Yueshan Li (yuesli@student.ethz.ch)"
 # pick an icon from: https://fontawesome.com/v4.7.0/icons/
 ARG ICON="cube"
 

@@ -8,7 +8,8 @@ import tf2_ros
 from duckietown.dtros import DTROS, NodeType
 from duckietown_msgs.msg import WheelEncoderStamped
 from geometry_msgs.msg import TransformStamped
-from encoder_localization.srv import FrameCalibration,FrameCalibrationResponse
+from encoder_localization.srv import FrameCalibration
+#,FrameCalibrationResponse
 class EncoderLocalizationNode(DTROS):
 
     def __init__(self, node_name):
@@ -41,7 +42,7 @@ class EncoderLocalizationNode(DTROS):
         self.pub_encoder_localization = rospy.Publisher('encoder_localization_node/transform',TransformStamped,queue_size=1)
         
         #server for calibration
-        self.server = rospy.Service('frame_calibration', FrameCalibration, self.frame_calibration)
+        self.server = rospy.Service('encoder_localization_node/frame_calibration', FrameCalibration, self.frame_calibration)
         
         # tf broadcaster
         self.br = tf2_ros.TransformBroadcaster()
@@ -164,9 +165,8 @@ class EncoderLocalizationNode(DTROS):
         new_transform=self.pose_to_msg()
         self.pub_encoder_localization.publish(new_transform)
         self.br.sendTransform(new_transform)
-        
-        return FrameCalibrationResponse(True)
-        
+        return True
+                
 if __name__ == '__main__':
     node = EncoderLocalizationNode(node_name='encoder_localization_node')
     # Keep it spinning to keep the node alive

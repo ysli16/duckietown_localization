@@ -3,6 +3,7 @@ project(fused_localization)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  geometry_msgs
 )
 
 catkin_package()

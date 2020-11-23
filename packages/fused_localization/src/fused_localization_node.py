@@ -29,8 +29,9 @@ class FusedLocalizationNode(DTROS):
         self.first_detected_at=False #set to True when detect April tag for the first time
         self.detected_at=False #True when april tag is visible, otherwise false
         self.mode=0 #0:use encoder estimation, 1:use april tag estimation
+        self.T_EF=np.eye(4)
         self.last_time=rospy.Time()#time when last at_localization message is received. if don't receive at message for >0.5s, we assume at is invisible
-        self.threshold=0.5 #if don't receive at message for >0.5s, we assume at is invisible
+        self.threshold=1 #if don't receive at message for >0.5s, we assume at is invisible
         
         self.br = tf2_ros.TransformBroadcaster()
     
@@ -47,24 +48,24 @@ class FusedLocalizationNode(DTROS):
         if self.mode==0:
             self.mode=1
             
-        if not self.first_detected_at:
-            #call service to calibrate encoder frame
-            self.first_detected_at=True
-            rospy.wait_for_service('frame_calibration')
-            frame_calibration = rospy.ServiceProxy('frame_calibration', FrameCalibration)
-            req = FrameCalibrationRequest(transform_at)
-            frame_calibration(req)
             
         self.last_time=transform_at.header.stamp 
-        fused_matrix=self.msg_to_matrix(transform_at)
+        at_matrix=self.msg_to_matrix(transform_at)
+        al, be, ga=tf.transformations.euler_from_matrix(at_matrix,axes='szxy')
         #project to ground plane
-        fused_matrix[2,3]=0
-        fused_matrix[0:3,2]=[0,0,1]
-        fused_matrix[2,0:3]=[0,0,1]
-        
+        fused_matrix=tf.transformations.euler_matrix(al, 0, 0, 'szxy')
+        fused_matrix[0:2,3]=at_matrix[0:2,3]
         self.T_MF=fused_matrix
         transform_fused=self.matrix_to_msg(fused_matrix,'map','fused_baselink',transform_at.header.stamp)
         
+        if not self.first_detected_at:
+            #call service to calibrate encoder frame
+            self.first_detected_at=True
+            rospy.wait_for_service('encoder_localization_node/frame_calibration')
+            frame_calibration = rospy.ServiceProxy('encoder_localization_node/frame_calibration', FrameCalibration)
+            req = FrameCalibrationRequest(transform_fused)
+            frame_calibration(req)
+            
         self.br.sendTransform(transform_fused)
         self.pub_fused_localization.publish(transform_fused)
         
@@ -102,6 +103,8 @@ class FusedLocalizationNode(DTROS):
         Transform.transform.rotation.y = quaternion[1]
         Transform.transform.rotation.z = quaternion[2]
         Transform.transform.rotation.w = quaternion[3]   
+        
+        return Transform
         
     def msg_to_matrix(self,msg):
         #convert transformstamped message to 4*4 transform matrix

@@ -8,6 +8,10 @@
   <license>None</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <run_depend>encoder_localization</run_depend>
-  <build_depend>encoder_localization</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+
 </package>
